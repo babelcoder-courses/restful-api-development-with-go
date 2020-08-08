@@ -114,6 +114,17 @@ func (a *Articles) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"article": serializedArticle})
 }
 
+func (a *Articles) Delete(ctx *gin.Context) {
+	article, err := a.findArticleByID(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	a.DB.Unscoped().Delete(&article)
+	ctx.Status(http.StatusNoContent)
+}
+
 func (a *Articles) setArticleImage(ctx *gin.Context, article *models.Article) error {
 	file, err := ctx.FormFile("image")
 	if err != nil || file == nil {
