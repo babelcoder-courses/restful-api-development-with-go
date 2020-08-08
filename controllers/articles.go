@@ -24,6 +24,13 @@ type createArticleForm struct {
 	Image   *multipart.FileHeader `form:"image" binding:"required"`
 }
 
+type updateArticleForm struct {
+	Title   string                `form:"title"`
+	Body    string                `form:"body"`
+	Excerpt string                `form:"excerpt"`
+	Image   *multipart.FileHeader `form:"image"`
+}
+
 type articleResponse struct {
 	ID      uint   `json:"id"`
 	Title   string `json:"title"`
@@ -80,6 +87,31 @@ func (a *Articles) Create(ctx *gin.Context) {
 	copier.Copy(&serializedArticle, &article)
 
 	ctx.JSON(http.StatusCreated, gin.H{"article": serializedArticle})
+}
+
+func (a *Articles) Update(ctx *gin.Context) {
+	var form updateArticleForm
+	if err := ctx.ShouldBind(&form); err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
+
+	article, err := a.findArticleByID(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := a.DB.Model(&article).Update(&form).Error; err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error})
+		return
+	}
+
+	a.setArticleImage(ctx, article)
+
+	var serializedArticle articleResponse
+	copier.Copy(&serializedArticle, article)
+	ctx.JSON(http.StatusOK, gin.H{"article": serializedArticle})
 }
 
 func (a *Articles) setArticleImage(ctx *gin.Context, article *models.Article) error {

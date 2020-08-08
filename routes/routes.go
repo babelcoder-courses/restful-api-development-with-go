@@ -14,6 +14,7 @@ func Serve(r *gin.Engine) {
 	{
 		articlesGroup.GET("", articleController.FindAll)
 		articlesGroup.GET("/:id", articleController.FindOne)
+		articlesGroup.PATCH("/:id", articleController.Update)
 		articlesGroup.POST("", articleController.Create)
 	}
 }
