@@ -11,6 +11,12 @@ func Serve(r *gin.Engine) {
 	db := config.GetDB()
 	v1 := r.Group("/api/v1")
 
+	authGroup := v1.Group("auth")
+	authController := controllers.Auth{DB: db}
+	{
+		authGroup.POST("/sign-up", authController.Signup)
+	}
+
 	articlesGroup := v1.Group("articles")
 	articleController := controllers.Articles{DB: db}
 	{
