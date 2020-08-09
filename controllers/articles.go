@@ -18,17 +18,19 @@ type Articles struct {
 }
 
 type createArticleForm struct {
-	Title   string                `form:"title" binding:"required"`
-	Body    string                `form:"body" binding:"required"`
-	Excerpt string                `form:"excerpt" binding:"required"`
-	Image   *multipart.FileHeader `form:"image" binding:"required"`
+	Title      string                `form:"title" binding:"required"`
+	Body       string                `form:"body" binding:"required"`
+	Excerpt    string                `form:"excerpt" binding:"required"`
+	CategoryID uint                  `form:"categoryId" binding:"required"`
+	Image      *multipart.FileHeader `form:"image" binding:"required"`
 }
 
 type updateArticleForm struct {
-	Title   string                `form:"title"`
-	Body    string                `form:"body"`
-	Excerpt string                `form:"excerpt"`
-	Image   *multipart.FileHeader `form:"image"`
+	Title      string                `form:"title"`
+	Body       string                `form:"body"`
+	Excerpt    string                `form:"excerpt"`
+	CategoryID uint                  `form:"categoryId"`
+	Image      *multipart.FileHeader `form:"image"`
 }
 
 type articleResponse struct {
