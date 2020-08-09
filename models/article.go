@@ -10,4 +10,6 @@ type Article struct {
 	Image      string `gorm:"not null"`
 	CategoryID uint
 	Category   Category
+	UserID     uint
+	User       User
 }
