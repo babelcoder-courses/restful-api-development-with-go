@@ -1,0 +1,6 @@
+p, Admin, /api/v1/users, (GET)|(POST)
+p, Admin, /api/v1/users/*, (GET)|(PATCH)|(DELETE)
+p, Admin, /api/v1/categories, (POST)
+p, Admin, /api/v1/categories/*, (PATCH)|(DELETE)
+p, (Admin)|(Editor), /api/v1/articles, (POST)
+p, (Admin)|(Editor), /api/v1/articles/*, (PATCH)|(DELETE)
