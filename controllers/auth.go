@@ -62,6 +62,7 @@ func (a *Auth) Signup(ctx *gin.Context) {
 
 	var user models.User
 	copier.Copy(&user, &form)
+	user.Password = user.GenerateEncryptedPassword()
 	if err := a.DB.Create(&user).Error; err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
