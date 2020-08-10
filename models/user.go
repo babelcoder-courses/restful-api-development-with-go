@@ -14,11 +14,7 @@ type User struct {
 	Role     string `gorm:"default:'Member'; not null"`
 }
 
-func (u *User) BeforeSave(scope *gorm.Scope) {
-	if u.Password == "" {
-		return
-	}
-
+func (u *User) GenerateEncryptedPassword() string {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
-	scope.SetColumn("password", string(hash))
+	return string(hash)
 }
