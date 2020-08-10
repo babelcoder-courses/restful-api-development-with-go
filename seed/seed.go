@@ -28,6 +28,8 @@ func Load() {
 		Role:     "Admin",
 		Avatar:   "https://i.pravatar.cc/100",
 	}
+
+	admin.Password = admin.GenerateEncryptedPassword()
 	db.Create(&admin)
 
 	// Add normal users
@@ -46,6 +48,7 @@ func Load() {
 			Role:     userRoles[rand.Intn(2)],
 		}
 
+		user.Password = user.GenerateEncryptedPassword()
 		db.Create(&user)
 		users = append(users, user)
 	}
