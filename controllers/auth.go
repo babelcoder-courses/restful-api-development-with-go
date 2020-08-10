@@ -1,13 +1,9 @@
 package controllers
 
 import (
-	"course-go/config"
 	"course-go/models"
 	"mime/multipart"
 	"net/http"
-	"os"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
@@ -32,14 +28,6 @@ type updateProfileForm struct {
 type authResponse struct {
 	ID    uint   `json:"id"`
 	Email string `json:"email"`
-}
-
-type userResponse struct {
-	ID     uint   `json:"id"`
-	Email  string `json:"email"`
-	Avatar string `json:"avatar"`
-	Name   string `json:"name"`
-	Role   string `json:"role"`
 }
 
 // /auth/profile => JWT => sub (UserID) => User => User
@@ -92,30 +80,4 @@ func (a *Auth) UpdateProfile(ctx *gin.Context) {
 	var serializedUser userResponse
 	copier.Copy(&serializedUser, user)
 	ctx.JSON(http.StatusOK, gin.H{"user": serializedUser})
-}
-
-func setUserImage(ctx *gin.Context, user *models.User) error {
-	file, _ := ctx.FormFile("avatar")
-	if file == nil {
-		return nil
-	}
-
-	if user.Avatar != "" {
-		user.Avatar = strings.Replace(user.Avatar, os.Getenv("HOST"), "", 1)
-		pwd, _ := os.Getwd()
-		os.Remove(pwd + user.Avatar)
-	}
-
-	path := "uploads/users/" + strconv.Itoa(int(user.ID))
-	os.MkdirAll(path, os.ModePerm)
-	filename := path + "/" + file.Filename
-	if err := ctx.SaveUploadedFile(file, filename); err != nil {
-		return err
-	}
-
-	db := config.GetDB()
-	user.Avatar = os.Getenv("HOST") + "/" + filename
-	db.Save(user)
-
-	return nil
 }
