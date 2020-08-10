@@ -49,10 +49,10 @@ func Serve(r *gin.Engine) {
 
 	categoryController := controllers.Categories{DB: db}
 	categoriesGroup := v1.Group("categories")
+	categoriesGroup.GET("", categoryController.FindAll)
+	categoriesGroup.GET("/:id", categoryController.FindOne)
 	categoriesGroup.Use(authenticate, authorize)
 	{
-		categoriesGroup.GET("", categoryController.FindAll)
-		categoriesGroup.GET("/:id", categoryController.FindOne)
 		categoriesGroup.PATCH("/:id", categoryController.Update)
 		categoriesGroup.DELETE("/:id", categoryController.Delete)
 		categoriesGroup.POST("", categoryController.Create)
