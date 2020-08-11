@@ -43,7 +43,7 @@ func pagingResource(ctx *gin.Context, query *gorm.DB, records interface{}) *pagi
 	if page == totalPage {
 		nextPage = totalPage
 	} else {
-		nextPage = page - 1
+		nextPage = page + 1
 	}
 
 	// 6. create pagingResult
