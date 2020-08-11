@@ -40,7 +40,7 @@ func (p *pagination) paginate() *pagingResult {
 	if page == totalPage {
 		nextPage = totalPage
 	} else {
-		nextPage = page - 1
+		nextPage = page + 1
 	}
 
 	return &pagingResult{
