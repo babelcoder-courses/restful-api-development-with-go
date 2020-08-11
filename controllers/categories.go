@@ -14,6 +14,7 @@ type Categories struct {
 }
 
 type categoryResponse struct {
+	ID       uint   `json:"id"`
 	Name     string `json:"name"`
 	Desc     string `json:"desc"`
 	Articles []struct {
@@ -23,6 +24,7 @@ type categoryResponse struct {
 }
 
 type allCategoryResponse struct {
+	ID   uint   `json:"id"`
 	Name string `json:"name"`
 	Desc string `json:"desc"`
 }

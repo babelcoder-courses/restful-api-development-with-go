@@ -1,3 +1,4 @@
+p, Admin, /api/v1/dashboard, (GET)
 p, Admin, /api/v1/users, (GET)|(POST)
 p, Admin, /api/v1/users/*, (GET)|(PATCH)|(DELETE)
 p, Admin, /api/v1/categories, (POST)

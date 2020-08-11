@@ -46,10 +46,15 @@ func (u *Users) FindAll(ctx *gin.Context) {
 	var users []models.User
 	query := u.DB.Order("id desc").Find(&users)
 
+	term := ctx.Query("term")
+	if term != "" {
+		query = query.Where("name ILIKE ?", "%"+term+"%")
+	}
+
 	pagination := pagination{ctx: ctx, query: query, records: &users}
 	paging := pagination.paginate()
 
-	var serializedUsers []userResponse
+	serializedUsers := []userResponse{}
 	copier.Copy(&serializedUsers, &users)
 	ctx.JSON(http.StatusOK, gin.H{
 		"users": usersPaging{Items: serializedUsers, Paging: paging},

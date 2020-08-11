@@ -57,4 +57,11 @@ func Serve(r *gin.Engine) {
 		categoriesGroup.DELETE("/:id", categoryController.Delete)
 		categoriesGroup.POST("", categoryController.Create)
 	}
+
+	dashboardController := controllers.Dashboard{DB: db}
+	dashboardGroup := v1.Group("dashboard")
+	dashboardGroup.Use(authenticate, authorize)
+	{
+		dashboardGroup.GET("", dashboardController.GetInfo)
+	}
 }
