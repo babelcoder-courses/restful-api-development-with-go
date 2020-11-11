@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type Dashboard struct {
@@ -24,8 +24,8 @@ type dashboardResponse struct {
 		Role  string `json:"role"`
 		Count uint   `json:"count"`
 	} `json:"usersCount"`
-	CategoriesCount uint `json:"categoriesCount"`
-	ArticlesCount   uint `json:"articlesCount"`
+	CategoriesCount int64 `json:"categoriesCount"`
+	ArticlesCount   int64 `json:"articlesCount"`
 }
 
 func (d *Dashboard) GetInfo(ctx *gin.Context) {

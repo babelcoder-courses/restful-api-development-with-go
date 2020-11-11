@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type Auth struct {
@@ -72,7 +72,7 @@ func (a *Auth) UpdateProfile(ctx *gin.Context) {
 	user := sub.(*models.User)
 
 	setUserImage(ctx, user)
-	if err := a.DB.Model(user).Update(&form).Error; err != nil {
+	if err := a.DB.Model(user).Updates(&form).Error; err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}

@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type Categories struct {
@@ -92,7 +92,7 @@ func (c *Categories) Update(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.DB.Model(&category).Update(&form).Error; err != nil {
+	if err := c.DB.Model(&category).Updates(&form).Error; err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}

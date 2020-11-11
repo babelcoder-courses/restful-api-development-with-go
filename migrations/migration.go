@@ -4,7 +4,7 @@ import (
 	"course-go/config"
 	"log"
 
-	"gopkg.in/gormigrate.v1"
+	"github.com/go-gormigrate/gormigrate/v2"
 )
 
 func Migrate() {

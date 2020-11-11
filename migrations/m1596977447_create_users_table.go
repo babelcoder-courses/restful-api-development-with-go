@@ -1,20 +1,28 @@
 package migrations
 
 import (
-	"course-go/models"
-
-	"github.com/jinzhu/gorm"
-	"gopkg.in/gormigrate.v1"
+	"github.com/go-gormigrate/gormigrate/v2"
+	"gorm.io/gorm"
 )
 
 func m1596977447CreateUsersTable() *gormigrate.Migration {
 	return &gormigrate.Migration{
 		ID: "1596977447",
 		Migrate: func(tx *gorm.DB) error {
-			return tx.AutoMigrate(&models.User{}).Error
+
+			type user struct {
+				gorm.Model
+				Email    string `gorm:"uniqueIndex; not null"`
+				Password string `gorm:"not null"`
+				Name     string `gorm:"not null"`
+				Avatar   string
+				Role     string `gorm:"default:'Member'; not null"`
+			}
+
+			return tx.Migrator().CreateTable(&user{})
 		},
 		Rollback: func(tx *gorm.DB) error {
-			return tx.DropTable("users").Error
+			return tx.Migrator().DropTable("users")
 		},
 	}
 }

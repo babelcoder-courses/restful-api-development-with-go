@@ -5,21 +5,22 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type pagingResult struct {
-	Page      int `json:"page"`
-	Limit     int `json:"limit"`
-	PrevPage  int `json:"prevPage"`
-	NextPage  int `json:"nextPage"`
-	Count     int `json:"count"`
-	TotalPage int `json:"totalPage"`
+	Page      int   `json:"page"`
+	Limit     int   `json:"limit"`
+	PrevPage  int   `json:"prevPage"`
+	NextPage  int   `json:"nextPage"`
+	Count     int64 `json:"count"`
+	TotalPage int   `json:"totalPage"`
 }
 
 type pagination struct {
 	ctx     *gin.Context
 	query   *gorm.DB
+	table   string
 	records interface{}
 }
 
@@ -27,7 +28,7 @@ func (p *pagination) paginate() *pagingResult {
 	page, _ := strconv.Atoi(p.ctx.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(p.ctx.DefaultQuery("limit", "12"))
 
-	ch := make(chan int)
+	ch := make(chan int64)
 	go p.countRecords(ch)
 
 	offset := (page - 1) * limit
@@ -53,9 +54,10 @@ func (p *pagination) paginate() *pagingResult {
 	}
 }
 
-func (p *pagination) countRecords(ch chan int) {
-	var count int
-	p.query.Model(p.records).Count(&count)
+func (p *pagination) countRecords(ch chan int64) {
+	var count int64
+	tx := p.query.Session(&gorm.Session{WithConditions: true}).Table(p.table)
+	tx.Count(&count)
 
 	ch <- count
 }

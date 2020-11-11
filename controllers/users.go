@@ -10,7 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type Users struct {
@@ -44,16 +44,15 @@ type usersPaging struct {
 
 func (u *Users) FindAll(ctx *gin.Context) {
 	var users []models.User
-	query := u.DB.Order("id desc").Find(&users)
+	query := u.DB.Order("id desc")
 
 	term := ctx.Query("term")
 	if term != "" {
 		query = query.Where("name ILIKE ?", "%"+term+"%")
 	}
 
-	pagination := pagination{ctx: ctx, query: query, records: &users}
+	pagination := pagination{ctx: ctx, query: query, records: &users, table: "users"}
 	paging := pagination.paginate()
-
 	serializedUsers := []userResponse{}
 	copier.Copy(&serializedUsers, &users)
 	ctx.JSON(http.StatusOK, gin.H{
@@ -111,7 +110,7 @@ func (u *Users) Update(ctx *gin.Context) {
 		user.Password = user.GenerateEncryptedPassword()
 	}
 
-	if err := u.DB.Model(&user).Update(&form).Error; err != nil {
+	if err := u.DB.Model(&user).Updates(&form).Error; err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}

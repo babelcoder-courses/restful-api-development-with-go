@@ -3,18 +3,18 @@ package migrations
 import (
 	"course-go/models"
 
-	"github.com/jinzhu/gorm"
-	"gopkg.in/gormigrate.v1"
+	"github.com/go-gormigrate/gormigrate/v2"
+	"gorm.io/gorm"
 )
 
 func m1597000245AddUserIDToArticles() *gormigrate.Migration {
 	return &gormigrate.Migration{
 		ID: "1597000245",
 		Migrate: func(tx *gorm.DB) error {
-			return tx.AutoMigrate(&models.Article{}).Error
+			return tx.Migrator().AddColumn(&models.Article{}, "user_id")
 		},
 		Rollback: func(tx *gorm.DB) error {
-			return tx.Model(&models.Article{}).DropColumn("user_id").Error
+			return tx.Migrator().DropColumn(&models.Article{}, "user_id")
 		},
 	}
 }

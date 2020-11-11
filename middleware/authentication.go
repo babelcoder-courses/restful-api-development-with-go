@@ -3,12 +3,14 @@ package middleware
 import (
 	"course-go/config"
 	"course-go/models"
+	"errors"
 	"log"
 	"os"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type login struct {
@@ -34,7 +36,7 @@ func Authenticate() *jwt.GinJWTMiddleware {
 			id := claims[identityKey]
 
 			db := config.GetDB()
-			if db.First(&user, uint(id.(float64))).RecordNotFound() {
+			if err := db.First(&user, uint(id.(float64))).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 				return nil
 			}
 
@@ -51,7 +53,7 @@ func Authenticate() *jwt.GinJWTMiddleware {
 			}
 
 			db := config.GetDB()
-			if db.Where("email = ?", form.Email).First(&user).RecordNotFound() {
+			if err := db.Where("email = ?", form.Email).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 				return nil, jwt.ErrFailedAuthentication
 			}
 

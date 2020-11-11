@@ -3,15 +3,17 @@ package migrations
 import (
 	"course-go/models"
 
-	"github.com/jinzhu/gorm"
-	"gopkg.in/gormigrate.v1"
+	"github.com/go-gormigrate/gormigrate/v2"
+	"gorm.io/gorm"
 )
 
 func m1596954993AddCategoryIDToArticles() *gormigrate.Migration {
 	return &gormigrate.Migration{
 		ID: "1596954993",
 		Migrate: func(tx *gorm.DB) error {
-			err := tx.AutoMigrate(&models.Article{}).Error
+			if err := tx.Migrator().AddColumn(&models.Article{}, "category_id"); err != nil {
+				return err
+			}
 
 			var articles []models.Article
 			tx.Unscoped().Find(&articles)
@@ -20,10 +22,10 @@ func m1596954993AddCategoryIDToArticles() *gormigrate.Migration {
 				tx.Save(&article)
 			}
 
-			return err
+			return nil
 		},
 		Rollback: func(tx *gorm.DB) error {
-			return tx.Model(&models.Article{}).DropColumn("category_id").Error
+			return tx.Migrator().DropColumn(&models.Article{}, "category_id")
 		},
 	}
 }

@@ -10,7 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type Articles struct {
@@ -67,7 +67,6 @@ type articlesPaging struct {
 
 func (a *Articles) FindAll(ctx *gin.Context) {
 	articles := []models.Article{}
-
 	query := a.DB.Preload("User").Preload("Category").Order("id desc")
 
 	categoryID := ctx.Query("categoryId")
@@ -80,7 +79,7 @@ func (a *Articles) FindAll(ctx *gin.Context) {
 		query = query.Where("title ILIKE ?", "%"+term+"%")
 	}
 
-	pagination := pagination{ctx: ctx, query: query, records: &articles}
+	pagination := pagination{ctx: ctx, query: query, records: &articles, table: "articles"}
 	paging := pagination.paginate()
 	serializedArticles := []articleResponse{}
 	copier.Copy(&serializedArticles, &articles)
@@ -136,7 +135,7 @@ func (a *Articles) Update(ctx *gin.Context) {
 		return
 	}
 
-	if err := a.DB.Model(&article).Update(&form).Error; err != nil {
+	if err := a.DB.Model(&article).Updates(&form).Error; err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error})
 		return
 	}

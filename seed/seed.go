@@ -4,22 +4,22 @@ import (
 	"course-go/config"
 	"course-go/migrations"
 	"course-go/models"
+	"fmt"
 	"math/rand"
 	"strconv"
 
 	"github.com/bxcodec/faker/v3"
-	"github.com/labstack/gommon/log"
 )
 
 func Load() {
 	db := config.GetDB()
 
 	// Clean Database
-	db.DropTableIfExists("users", "articles", "categories", "migrations")
+	db.Migrator().DropTable("users", "articles", "categories", "migrations")
 	migrations.Migrate()
 
 	// Add Admin
-	log.Info("Creating admin...")
+	fmt.Println("Creating admin...")
 
 	admin := models.User{
 		Email:    "admin@babelcoder.com",
@@ -33,7 +33,7 @@ func Load() {
 	db.Create(&admin)
 
 	// Add normal users
-	log.Info("Creating users...")
+	fmt.Println("Creating users...")
 
 	numOfUsers := 50
 	users := make([]models.User, 0, numOfUsers)
@@ -54,7 +54,7 @@ func Load() {
 	}
 
 	// Add categories
-	log.Info("Creating categories...")
+	fmt.Println("Creating categories...")
 
 	numOfCategories := 20
 	categories := make([]models.Category, 0, numOfCategories)
@@ -70,7 +70,7 @@ func Load() {
 	}
 
 	// Add articles
-	log.Info("Creating articles...")
+	fmt.Println("Creating articles...")
 
 	numOfArticles := 50
 	articles := make([]models.Article, 0, numOfArticles)

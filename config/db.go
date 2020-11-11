@@ -4,27 +4,30 @@ import (
 	"log"
 	"os"
 
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var db *gorm.DB
 
 func InitDB() {
+	connection := os.Getenv("DATABASE_URL")
 	var err error
-	db, err = gorm.Open("postgres", os.Getenv("DATABASE_URL"))
+	db, err = gorm.Open(postgres.Open(connection), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	db.LogMode(gin.Mode() == gin.DebugMode)
 }
 
 func GetDB() *gorm.DB {
 	return db
 }
 
-func CloseDB() {
-	db.Close()
+func CloseDB() error {
+	sqlDB, err := db.DB()
+	if err != nil {
+		return err
+	}
+
+	return sqlDB.Close()
 }
