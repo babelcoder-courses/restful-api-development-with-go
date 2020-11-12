@@ -11,15 +11,15 @@ type User struct {
 	Password string `gorm:"not null"`
 	Name     string `gorm:"not null"`
 	Avatar   string
-	Role     string `gorm:"default:'Member'; not null"`
+	Role     Role `gorm:"default:3; not null"`
 }
 
 func (u *User) Promote() {
-	u.Role = "Editor"
+	u.Role = RoleEditor
 }
 
 func (u *User) Demote() {
-	u.Role = "Member"
+	u.Role = RoleMember
 }
 
 func (u *User) GenerateEncryptedPassword() string {

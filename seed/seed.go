@@ -25,7 +25,7 @@ func Load() {
 		Email:    "admin@babelcoder.com",
 		Password: "passw0rd",
 		Name:     "Admin",
-		Role:     "Admin",
+		Role:     models.RoleAdmin,
 		Avatar:   "https://i.pravatar.cc/100",
 	}
 
@@ -37,7 +37,11 @@ func Load() {
 
 	numOfUsers := 50
 	users := make([]models.User, 0, numOfUsers)
-	userRoles := [2]string{"Editor", "Member"}
+	userRoles := [3]models.Role{
+		models.RoleAdmin,
+		models.RoleEditor,
+		models.RoleMember,
+	}
 
 	for i := 1; i <= numOfUsers; i++ {
 		user := models.User{
@@ -45,7 +49,7 @@ func Load() {
 			Email:    faker.Email(),
 			Password: "passw0rd",
 			Avatar:   "https://i.pravatar.cc/100?" + strconv.Itoa(i),
-			Role:     userRoles[rand.Intn(2)],
+			Role:     userRoles[rand.Intn(len(userRoles))],
 		}
 
 		user.Password = user.GenerateEncryptedPassword()

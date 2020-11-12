@@ -1,6 +1,8 @@
 package migrations
 
 import (
+	"course-go/models"
+
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
 )
@@ -16,7 +18,7 @@ func m1596977447CreateUsersTable() *gormigrate.Migration {
 				Password string `gorm:"not null"`
 				Name     string `gorm:"not null"`
 				Avatar   string
-				Role     string `gorm:"default:'Member'; not null"`
+				Role     models.Role `gorm:"default:3; not null"`
 			}
 
 			return tx.Migrator().CreateTable(&user{})

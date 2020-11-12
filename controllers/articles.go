@@ -106,9 +106,9 @@ func (a *Articles) Create(ctx *gin.Context) {
 	}
 
 	var article models.Article
-	user, _ := ctx.Get("sub")
+	auth, _ := ctx.Get("sub")
 	copier.Copy(&article, &form)
-	article.User = *user.(*models.User)
+	article.UserID = auth.(*models.Auth).ID
 
 	if err := a.DB.Create(&article).Error; err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})

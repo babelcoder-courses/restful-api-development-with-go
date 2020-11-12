@@ -33,10 +33,12 @@ type authResponse struct {
 // /auth/profile => JWT => sub (UserID) => User => User
 func (a *Auth) GetProfile(ctx *gin.Context) {
 	//  user
-	sub, _ := ctx.Get("sub")
-	user := sub.(*models.User)
+	auth, _ := ctx.Get("auth")
+	userID := auth.(*models.Auth).ID
+	var user models.User
 
 	var serializedUser userResponse
+	a.DB.First(&user, userID)
 	copier.Copy(&serializedUser, user)
 	ctx.JSON(http.StatusOK, gin.H{"user": serializedUser})
 }
@@ -68,9 +70,11 @@ func (a *Auth) UpdateProfile(ctx *gin.Context) {
 		return
 	}
 
-	sub, _ := ctx.Get("sub")
-	user := sub.(*models.User)
+	var user *models.User
+	auth, _ := ctx.Get("sub")
+	userID := auth.(*models.Auth).ID
 
+	a.DB.First(user, userID)
 	setUserImage(ctx, user)
 	if err := a.DB.Model(user).Updates(&form).Error; err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})

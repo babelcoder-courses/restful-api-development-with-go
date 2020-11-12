@@ -18,29 +18,23 @@ type login struct {
 	Password string `json:"password" binding:"required,min=8"`
 }
 
-var identityKey = "sub"
-
 func Authenticate() *jwt.GinJWTMiddleware {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		// secret key
 		Key: []byte(os.Getenv("SECRET_KEY")),
 
-		IdentityKey: identityKey,
+		IdentityKey: "auth",
 
 		TokenLookup:   "header: Authorization",
 		TokenHeadName: "Bearer",
 
 		IdentityHandler: func(c *gin.Context) interface{} {
-			var user models.User
 			claims := jwt.ExtractClaims(c)
-			id := claims[identityKey]
 
-			db := config.GetDB()
-			if err := db.First(&user, uint(id.(float64))).Error; errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil
+			return &models.Auth{
+				ID:   uint(claims["sub"].(float64)),
+				Role: models.Role(claims["role"].(float64)),
 			}
-
-			return &user
 		},
 
 		// login => user
@@ -68,7 +62,8 @@ func Authenticate() *jwt.GinJWTMiddleware {
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*models.User); ok {
 				claims := jwt.MapClaims{
-					identityKey: v.ID,
+					"sub":  v.ID,
+					"role": v.Role,
 				}
 
 				return claims
