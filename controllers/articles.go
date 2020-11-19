@@ -79,7 +79,7 @@ func (a *Articles) FindAll(ctx *gin.Context) {
 		query = query.Where("title ILIKE ?", "%"+term+"%")
 	}
 
-	pagination := pagination{ctx: ctx, query: query, records: &articles, table: "articles"}
+	pagination := pagination{ctx: ctx, query: query, records: &articles}
 	paging := pagination.paginate()
 	serializedArticles := []articleResponse{}
 	copier.Copy(&serializedArticles, &articles)
@@ -106,7 +106,7 @@ func (a *Articles) Create(ctx *gin.Context) {
 	}
 
 	var article models.Article
-	auth, _ := ctx.Get("sub")
+	auth, _ := ctx.Get("auth")
 	copier.Copy(&article, &form)
 	article.UserID = auth.(*models.Auth).ID
 

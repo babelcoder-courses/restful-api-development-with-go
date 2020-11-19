@@ -30,11 +30,11 @@ type updateUserForm struct {
 }
 
 type userResponse struct {
-	ID     uint   `json:"id"`
-	Email  string `json:"email"`
-	Avatar string `json:"avatar"`
-	Name   string `json:"name"`
-	Role   string `json:"role"`
+	ID     uint        `json:"id"`
+	Email  string      `json:"email"`
+	Avatar string      `json:"avatar"`
+	Name   string      `json:"name"`
+	Role   models.Role `json:"role"`
 }
 
 type usersPaging struct {
@@ -51,7 +51,7 @@ func (u *Users) FindAll(ctx *gin.Context) {
 		query = query.Where("name ILIKE ?", "%"+term+"%")
 	}
 
-	pagination := pagination{ctx: ctx, query: query, records: &users, table: "users"}
+	pagination := pagination{ctx: ctx, query: query, records: &users}
 	paging := pagination.paginate()
 	serializedUsers := []userResponse{}
 	copier.Copy(&serializedUsers, &users)

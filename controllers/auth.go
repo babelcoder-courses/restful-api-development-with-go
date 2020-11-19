@@ -71,7 +71,7 @@ func (a *Auth) UpdateProfile(ctx *gin.Context) {
 	}
 
 	var user *models.User
-	auth, _ := ctx.Get("sub")
+	auth, _ := ctx.Get("auth")
 	userID := auth.(*models.Auth).ID
 
 	a.DB.First(user, userID)

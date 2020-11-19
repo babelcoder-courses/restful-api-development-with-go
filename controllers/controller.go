@@ -20,7 +20,6 @@ type pagingResult struct {
 type pagination struct {
 	ctx     *gin.Context
 	query   *gorm.DB
-	table   string
 	records interface{}
 }
 
@@ -28,13 +27,11 @@ func (p *pagination) paginate() *pagingResult {
 	page, _ := strconv.Atoi(p.ctx.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(p.ctx.DefaultQuery("limit", "12"))
 
-	ch := make(chan int64)
-	go p.countRecords(ch)
+	count := p.countRecords()
 
 	offset := (page - 1) * limit
 	p.query.Limit(limit).Offset(offset).Find(p.records)
 
-	count := <-ch
 	totalPage := int(math.Ceil(float64(count) / float64(limit)))
 
 	var nextPage int
@@ -54,10 +51,9 @@ func (p *pagination) paginate() *pagingResult {
 	}
 }
 
-func (p *pagination) countRecords(ch chan int64) {
+func (p *pagination) countRecords() int64 {
 	var count int64
-	tx := p.query.Session(&gorm.Session{WithConditions: true}).Table(p.table)
-	tx.Count(&count)
+	p.query.Model(p.records).Count(&count)
 
-	ch <- count
+	return count
 }
