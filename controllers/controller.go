@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"math"
 	"strconv"
 
@@ -27,7 +28,8 @@ func (p *pagination) paginate() *pagingResult {
 	page, _ := strconv.Atoi(p.ctx.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(p.ctx.DefaultQuery("limit", "12"))
 
-	count := p.countRecords()
+	var count int64
+	go p.countRecords(&count)
 
 	offset := (page - 1) * limit
 	p.query.Limit(limit).Offset(offset).Find(p.records)
@@ -51,9 +53,6 @@ func (p *pagination) paginate() *pagingResult {
 	}
 }
 
-func (p *pagination) countRecords() int64 {
-	var count int64
-	p.query.Model(p.records).Count(&count)
-
-	return count
+func (p *pagination) countRecords(count *int64) {
+	p.query.WithContext(context.Background()).Model(p.records).Count(count)
 }
